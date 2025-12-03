@@ -70,6 +70,8 @@ parseLines p = parse p'
       eof
       return ps
 
+slice from to xs = take (to - from + 1) (drop from xs)
+
 ltov2 :: [[a]] -> Vector (Vector a)
 ltov2 = V.fromList . map V.fromList
 
