@@ -28,11 +28,11 @@ largestNumOfLen n s = read ans
 
 largestNumInSlice from to s = (idx, s !! idx)
   where
-    idx = from + largestNunIdx sliced
+    idx = from + largestNumIdx sliced
     sliced = slice from to s
 
-largestNunIdx :: String -> Int
-largestNunIdx s = ans
+largestNumIdx :: String -> Int
+largestNumIdx s = ans
   where
     n = head $ dropWhile (\nc -> isNothing (lookFor nc s)) "987654321"
     ans = case lookFor n s of
