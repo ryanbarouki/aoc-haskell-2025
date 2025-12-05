@@ -307,6 +307,13 @@ rangeIntersect (a, b) (c, d)
   | b < c || a > d = Nothing
   | otherwise = Just (max a c, min b d)
 
+rangeUnion :: (Ord b) => (b, b) -> (b, b) -> [(b, b)]
+rangeUnion r1@(a, b) r2@(c, d)
+  | c < a = rangeUnion r2 r1
+  | b < c = [(a, b), (c, d)]
+  | b >= c && b <= d = [(a, d)]
+  | otherwise = [(a, b)]
+
 -- | Converts a list of booleans (parsed as a binary number) to an integer.
 binToDec :: (Num a) => [Bool] -> a
 binToDec = sum . zipWith (*) (map (2 ^) [0 ..]) . map (fromIntegral . fromEnum) . reverse
