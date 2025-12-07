@@ -7,13 +7,14 @@
 {-# OPTIONS_GHC -Wno-type-defaults #-}
 {-# OPTIONS_HADDOCK prune, ignore-exports #-}
 
-module AOC (module Prelude, module AOC, module Text.Megaparsec, module Text.Megaparsec.Char, module Data.Vector, module Data.Char, module Data.List, module Data.List.Split, module Data.List.Extra, module Data.Hashable, module Data.Maybe, module Data.Either, module Data.Bool, module Control.Monad, module Control.Arrow, module Data.Ord) where
+module AOC (module Prelude, module AOC, module Text.Megaparsec, module Text.Megaparsec.Char, module Data.Vector, module Data.Char, module Data.List, module Data.List.Split, module Data.List.Extra, module Data.Hashable, module Data.Maybe, module Data.Either, module Data.Bool, module Control.Monad, module Control.Arrow, module Data.Ord, force, evaluate) where
 
 import Control.Arrow
 -- hiding (interact)
 
 import Control.Concurrent (modifyMVar_, newMVar, readMVar, threadDelay)
-import Control.Exception (ArithException (..))
+import Control.DeepSeq (force)
+import Control.Exception (ArithException (..), evaluate)
 import Control.Monad
 import Data.Bits
 import Data.Bool
@@ -41,6 +42,7 @@ import Data.Vector.Unboxed (Unbox)
 import Data.Vector.Unboxed qualified as U
 import Data.Void
 import Numeric
+import System.CPUTime
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Megaparsec hiding (chunk, parse)
 import Text.Megaparsec.Char
@@ -55,6 +57,14 @@ type Error = String
 type Parser a = Parsec Void Input a
 
 type VGrid a = Vector (Vector a)
+
+timeCpu :: IO a -> IO (a, Double)
+timeCpu action = do
+  start <- getCPUTime
+  result <- action
+  end <- getCPUTime
+  let diff = fromIntegral (end - start) / (10 ^ 12) -- seconds
+  return (result, diff)
 
 parse :: Parser a -> Input -> Either Error a
 parse parser input =

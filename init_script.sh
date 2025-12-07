@@ -5,16 +5,15 @@ for i in $(seq -w 01 12); do
 import AOC
 
 main :: IO ()
-main = interact solve
-
-solve :: String -> String
-solve input =
-  let result1 = part1 input
-      result2 = part2 input
-  in unlines
-       [ "Part 1: " ++ result1
-       , "Part 2: " ++ result2
-       ]
+main = do
+  input <- getContents
+  -- time part1
+  (result1, t1) <- timeCpu . evaluate . force . part1 $ input
+  -- time part2
+  (result2, t2) <- timeCpu . evaluate . force . part2 $ input
+  -- normal output
+  putStrLn $ "Part 1: " ++ result1 ++ " | time: " ++ show t1 ++ " s"
+  putStrLn $ "Part 2: " ++ result2 ++ " | time: " ++ show t2 ++ " s"
 
 part1 :: String -> String
 part1 input = "not implemented"

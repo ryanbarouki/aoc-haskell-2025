@@ -39,7 +39,7 @@ all:
 # add more here
 installdeps:
 	cabal update
-	cabal install --lib vector split text containers unordered-containers megaparsec hashable extra
+	cabal install --lib vector split text containers unordered-containers megaparsec hashable extra deepseq
 
 # Run on real input: make run 10
 run: AOC.hs
