@@ -7,12 +7,9 @@ import AOC
 main :: IO ()
 main = do
   input <- getContents
-  -- time part1
   (result1, t1) <- timeCpu . evaluate . force . part1 $ input
-  -- time part2
-  (result2, t2) <- timeCpu . evaluate . force . part2 $ input
-  -- normal output
   putStrLn $ "Part 1: " ++ result1 ++ " | time: " ++ show t1 ++ " s"
+  (result2, t2) <- timeCpu . evaluate . force . part2 $ input
   putStrLn $ "Part 2: " ++ result2 ++ " | time: " ++ show t2 ++ " s"
 
 part1 :: String -> String

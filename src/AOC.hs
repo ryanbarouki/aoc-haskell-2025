@@ -58,6 +58,13 @@ type Parser a = Parsec Void Input a
 
 type VGrid a = Vector (Vector a)
 
+data Point = Point Int Int Int deriving (Show, Eq, Ord)
+
+type ClusterMap = HM.HashMap Point (S.Set Point)
+
+instance Hashable Point where
+  hashWithSalt s (Point x y z) = s + hash x + hash y + hash z
+
 timeCpu :: IO a -> IO (a, Double)
 timeCpu action = do
   start <- getCPUTime
@@ -116,6 +123,9 @@ neighbours6 (x, y, z) = [(x + 1, y, z), (x, y + 1, z), (x, y, z + 1), (x - 1, y,
 -- | Returns the 26 points orthogonally or diagonally adjacent to the given point in 3D space.
 neighbours26 :: (Eq a, Eq b, Eq c, Num a, Num b, Num c) => (a, b, c) -> [(a, b, c)]
 neighbours26 (x, y, z) = [(x + p, y + q, z + r) | p <- [-1, 0, 1], q <- [-1, 0, 1], r <- [-1, 0, 1], p /= 0 || q /= 0 || r /= 0]
+
+euclidean :: Point -> Point -> Int
+euclidean (Point x y z) (Point x' y' z') = (x - x') ^ 2 + (y - y') ^ 2 + (z - z') ^ 2
 
 -- | Returns the Taxicab/Manhattan distance between two points in 2D space.
 taxicab2 :: (Num a) => (a, a) -> (a, a) -> a
