@@ -264,7 +264,7 @@ extrapolate n ls = let (o, p) = helper 0 S.empty ls in ls `genericIndex` (((n - 
 -- | Converts a set of points @(x,y)@ to a string composed of @'#'@ and @' '@. This function is useful when displaying puzzle answers formed by a grid of points.
 -- Up to translation of points, @prettyPrintSet . enumerateFilterSet (=='#') = id@.
 prettyPrintSet :: (Enum b, Enum a, Ord a, Ord b) => S.Set (a, b) -> String
-prettyPrintSet points = unlines [[if (x, y) `S.member` points then '#' else ' ' | x <- [xmin .. xmax]] | y <- reverse [ymin .. ymax]]
+prettyPrintSet points = unlines [[if (x, y) `S.member` points then '#' else '.' | x <- [xmin .. xmax]] | y <- reverse [ymin .. ymax]]
   where
     xs = S.map fst points
     ys = S.map snd points
