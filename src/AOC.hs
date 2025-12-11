@@ -10,8 +10,6 @@
 module AOC (module Prelude, module AOC, module Text.Megaparsec, module Text.Megaparsec.Char, module Data.Vector, module Data.Char, module Data.List, module Data.List.Split, module Data.List.Extra, module Data.Hashable, module Data.Maybe, module Data.Either, module Data.Bool, module Control.Monad, module Control.Arrow, module Data.Ord, force, evaluate) where
 
 import Control.Arrow
--- hiding (interact)
-
 import Control.Concurrent (modifyMVar_, newMVar, readMVar, threadDelay)
 import Control.DeepSeq (force)
 import Control.Exception (ArithException (..), evaluate)
@@ -293,8 +291,25 @@ memo2 f = unsafePerformIO $ do
   let f' a b = unsafePerformIO $ do
         m <- readMVar v
         case HM.lookup (a, b) m of
-          Nothing -> do let { r = f a b }; modifyMVar_ v (return . HM.insert (a, b) r); return r
           Just r -> return r
+          Nothing -> do
+            r <- evaluate (f a b)
+            modifyMVar_ v (return . HM.insert (a, b) r)
+            return r
+  return f'
+
+-- like memo3 but doesn't cache the first argument
+memo3' :: (Hashable a, Hashable b, Hashable c) => (a -> b -> c -> d) -> (a -> b -> c -> d)
+memo3' f = unsafePerformIO $ do
+  v <- newMVar HM.empty
+  let f' a b c = unsafePerformIO $ do
+        m <- readMVar v
+        case HM.lookup (b, c) m of
+          Just r -> return r
+          Nothing -> do
+            r <- evaluate (f a b c)
+            modifyMVar_ v (return . HM.insert (b, c) r)
+            return r
   return f'
 
 memo3 :: (Hashable a, Hashable b, Hashable c) => (a -> b -> c -> d) -> (a -> b -> c -> d)
@@ -303,8 +318,11 @@ memo3 f = unsafePerformIO $ do
   let f' a b c = unsafePerformIO $ do
         m <- readMVar v
         case HM.lookup (a, b, c) m of
-          Nothing -> do let { r = f a b c }; modifyMVar_ v (return . HM.insert (a, b, c) r); return r
           Just r -> return r
+          Nothing -> do
+            r <- evaluate (f a b c)
+            modifyMVar_ v (return . HM.insert (a, b, c) r)
+            return r
   return f'
 
 memo4 :: (Hashable a, Hashable b, Hashable c, Hashable d) => (a -> b -> c -> d -> e) -> (a -> b -> c -> d -> e)
@@ -313,8 +331,11 @@ memo4 f = unsafePerformIO $ do
   let f' a b c d = unsafePerformIO $ do
         m <- readMVar v
         case HM.lookup (a, b, c, d) m of
-          Nothing -> do let { r = f a b c d }; modifyMVar_ v (return . HM.insert (a, b, c, d) r); return r
           Just r -> return r
+          Nothing -> do
+            r <- evaluate (f a b c d)
+            modifyMVar_ v (return . HM.insert (a, b, c, d) r)
+            return r
   return f'
 
 -- | Generates a range with @[x..y]@, but reverses the list instead of returning an empty range if x > y.
